@@ -67,7 +67,7 @@ function newToyCard(toy) {
   // give button a name
   likeBtn.innerText = 'Like'
   // listen for an event when you click like
-  likeBtn.addEventListener("click", addLike)
+  likeBtn.addEventListener("click", (e) => addLike(e, toy))
 
   // append all elements to child div
   div.append(toyH2, toyImg, p, likeBtn)
@@ -78,7 +78,7 @@ function newToyCard(toy) {
 function addNewToy(e) {
   // prevent page from reloading
   e.preventDefault()
-  // debugger
+
   let body = {
     name: e.target.name.value,
     image: e.target.image.value,
@@ -99,15 +99,17 @@ function addNewToy(e) {
   .then(newToyObj => newToyCard(newToyObj))
 }
 
-function addLike(e) {
+function addLike(e, toy) {
   
+  console.log(toy)
+  console.log(toy.likes)
 
   const id = e.target.parentNode.dataset.id  
   // const div = e.target.parentNode
   // const likeCount = div.querySelector('p')
   // console.log(likeCount)
   const likeCount = e.target.previousElementSibling
-  likeCount.innerText = `${+toy.likes++} Likes`
+  // likeCount.innerText = `${+toy.likes++} Likes`
 
   const configObj = {
     method: "PATCH",
@@ -116,10 +118,12 @@ function addLike(e) {
       "Accept": "application/json"
     },
     body: JSON.stringify({
-      "likes": + likeCount.innerText+1
+      "likes": toy.likes += 1
     })
   }
 
   fetch(URL + `/${id}`, configObj)
+  .then(response => response.json())
+  .then(toy => likeCount.innerText = `${toy.likes} Likes`)
 // +likeCount.innerText++
 }
